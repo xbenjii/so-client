@@ -173,7 +173,7 @@ export class Bot extends EventEmitter {
         path: string,
         options: {
             form?: { [key: string] : string }
-            method: 'POST'
+            method?: 'POST'
         }
     ) {
         const uri = `${BASE_URL}/${path}`;
@@ -195,14 +195,14 @@ export class Bot extends EventEmitter {
             roomid = this.mainRoom;
         }
         const path = `chats/${roomid}/messages/new`;
-        return this.apiRequest(path, {
-            text
+        return this.makeRequest(path, {
+            form: { text }
         }).then(data => data.id);
     }
     edit(text: string, messageId: number) {
         const path = `messages/${messageId}`;
-        return this.apiRequest(path, {
-            text
+        return this.makeRequest(path, {
+            form: { text }
         });
     }
 }
