@@ -1,4 +1,3 @@
-
 import { EventEmitter } from 'events';
 import { stringify } from 'querystring';
 
@@ -9,7 +8,6 @@ import * as request from 'request-promise';
 import * as cheerio from 'cheerio';
 
 import { logger } from './logger';
-import commands from './commands';
 
 const BASE_URL = 'https://chat.stackoverflow.com';
 
@@ -54,7 +52,6 @@ interface BotConfig {
     mainRoom: number;
     email: string;
     password: string;
-    trigger: string;
 }
 
 export class Bot extends EventEmitter {
@@ -66,14 +63,12 @@ export class Bot extends EventEmitter {
     private mainRoom: number;
     private email: string;
     private password: string;
-    private trigger: string;
 
     constructor(config: BotConfig) {
         super();
         this.mainRoom = config.mainRoom;
         this.email = config.email;
         this.password = config.password;
-        this.trigger = config.trigger;
     }
     async auth() {
         this.logger.debug(`Authenticating with email ${this.email}`);
@@ -174,18 +169,24 @@ export class Bot extends EventEmitter {
             }
         });
     }
-    async apiRequest(path: string, form: { [key: string]: string }) {
+    async makeRequest(
+        path: string,
+        options: {
+            form?: { [key: string] : string }
+            method: 'POST'
+        }
+    ) {
         const uri = `${BASE_URL}/${path}`;
-        this.logger.debug({
-            uri,
-            form,
-            type: 'api_request'
-        });
         const response = await request({
+            ...{
+                ...options,
+                form: {
+                    ...options.form,
+                    fkey: this.fkey
+                }
+            },
             uri,
-            method: 'POST',
             jar: this.jar,
-            form
         });
         return (response && response.length) ? JSON.parse(response) : {};
     }
@@ -193,39 +194,15 @@ export class Bot extends EventEmitter {
         if (!roomid) {
             roomid = this.mainRoom;
         }
-        this.logger.debug(`Sending text message ${text} to room ${roomid}`);
         const path = `chats/${roomid}/messages/new`;
         return this.apiRequest(path, {
-            text,
-            fkey: this.fkey
+            text
         }).then(data => data.id);
     }
     edit(text: string, messageId: number) {
         const path = `messages/${messageId}`;
         return this.apiRequest(path, {
-            text,
-            fkey: this.fkey
+            text
         });
     }
-    handleEvent(event: any /* todo */) {
-        this.logger.debug(event);
-        if(event.event_type === 1) {
-            // temporary
-            const matched = splitByUnquotedSpaces(event.content.replace('&quot;', '"'));
-            this.logger.debug(matched);
-            if(matched) {
-                const [command, ...args] = matched;
-                if (!command.startsWith(this.trigger)) { return; }
-                const commandWithoutTrigger = command.replace(this.trigger, '');
-                if(typeof commands[commandWithoutTrigger] === 'function') {
-                    this.logger.debug(`Matched command ${command} with args ${args.join(' ')}`);
-                    commands[commandWithoutTrigger].call(this, { args, event }, (text: string, room = event.room_id) => this.send(text, room));
-                }
-            }
-        }
-    }
-}
-
-function splitByUnquotedSpaces(str: string) {
-    return str.match(/([^\s"]+)|"([^"]*)"/g);
 }
