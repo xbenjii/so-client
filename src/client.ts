@@ -181,7 +181,7 @@ export class Bot extends EventEmitter {
             ...{
                 ...options,
                 form: {
-                    ...options.form,
+                    ...(options.form ? options.form : {}),
                     fkey: this.fkey
                 }
             },
