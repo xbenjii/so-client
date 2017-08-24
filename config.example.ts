@@ -1,15 +1,15 @@
-interface Config {
+interface ClientConfig {
 	email: string;
 	password: string;
 	mainRoom: number;
 	trigger: string;
 }
 
-const Config : Config = {
+const config : ClientConfig = {
 	email: "",
 	password: "",
 	mainRoom: 1,
 	trigger: "."
 };
 
-export default Config;
+export { ClientConfig, config };
