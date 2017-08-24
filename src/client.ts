@@ -54,7 +54,7 @@ interface BotConfig {
     password: string;
 }
 
-export class Bot extends EventEmitter {
+export class Client extends EventEmitter {
     private logger = logger;
     private jar = jar();
     private fkey: string;
@@ -135,6 +135,7 @@ export class Bot extends EventEmitter {
             ws.on('message', () => ws.close());
         } else {
             ws.on('error', error => this.emit('error', error));
+            ws.on('close', error => this.emit('close', error));
             ws.on('message', (message) => {
                 const json = JSON.parse(message.toString()) as WSMessage;
                 for (let [room, data] of Object.entries(json)) {

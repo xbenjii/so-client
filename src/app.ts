@@ -1,18 +1,17 @@
-import { Bot } from './bot';
+import { ClientConfig } from '../config';
+import { Client } from './client';
 
-export default async (config: any) => {
-	const bot = new Bot(config);
+export default async (config: ClientConfig) => {
+	const client = new Client(config);
 	try {
-		await bot.auth();
-		await bot.connect();
-		await bot.join();
-		await bot.join(152531);
+		await client.auth();
+		await client.connect();
+		await client.join();
 	} catch (error) {
 		console.trace(error);
 	}
 
-	bot.once('open', () => console.log('Connected'));
-	bot.once('close', () => console.log('Connection closed'));
-	bot.on('error', error => console.error(error));
-	bot.on('event', event => bot.handleEvent(event));
+	client.once('open', () => console.log('Connected'));
+	client.once('close', () => console.log('Connection closed'));
+	client.on('error', error => console.error(error));
 };

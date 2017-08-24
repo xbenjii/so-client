@@ -1,4 +1,4 @@
-const config = require('./config.json');
+import { config } from './config';
 import bot from './src/app';
 
 console.log('config', config);

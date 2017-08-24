@@ -1,6 +1,6 @@
 dist
 node_modules
-config.json
+config.ts
 yarn-error.log
 npm-debug.log
 logs/*
