@@ -14,4 +14,5 @@ export default async (config: ClientConfig) => {
 	client.once('open', () => console.log('Connected'));
 	client.once('close', () => console.log('Connection closed'));
 	client.on('error', error => console.error(error));
+	client.on('event', event => client.logger.debug(event));
 };
