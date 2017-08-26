@@ -88,10 +88,11 @@ interface UserMentioned extends BaseEvent {
 
 /**
  * 9
- * TODO
  */
 interface MessageFlagged extends BaseEvent {
-    [key: string]: any;
+    content: string;
+    message_id: string;
+    message_flags: number;
 }
 
 /**
