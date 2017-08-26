@@ -1,140 +1,192 @@
-interface MessagePosted {
-    event_type: number; // 1
+interface BaseEvent {
+    event_type: number;
     time_stamp: number;
-    content: string;
     id: number;
-    user_id: number;
-    user_name: string;
     room_id: number;
     room_name: string;
+}
+
+/**
+ * 1
+ */
+interface MessagePosted extends BaseEvent {
+    content: string;
+    user_id: number;
+    user_name: string;
     message_id: number;
 }
 
-interface MessageEdited {
-    event_type: number; // 2
-    time_stamp: number;
+/**
+ * 2
+ */
+interface MessageEdited extends BaseEvent {
     content: string;
-    id: number;
     user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
     message_id: number;
     message_edits: number;
 }
 
-interface UserEntered {
-    event_type: number; // 3
-    time_stamp: number;
-    id: number;
+/**
+ * 3
+ */
+interface UserEntered extends BaseEvent {
     user_id: number;
     target_user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
 }
 
-interface UserLeft {
-    event_type: number; // 4
-    time_stamp: number;
-    id: number;
+/**
+ * 4
+ */
+interface UserLeft extends BaseEvent {
     user_id: number;
     target_user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
 }
 
-interface RoomNameChanged {
-    event_type: number; // 5
-    time_stamp: number;
+/**
+ * 5
+ */
+interface RoomNameChanged extends BaseEvent {
     content: string;
-    id: number;
     user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
 }
 
-interface MessageStarred {
-    event_type: number; // 6
-    time_stamp: number;
+/**
+ * 6
+ */
+interface MessageStarred extends BaseEvent {
     content: string;
-    id: number;
     user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
     message_id: number;
     message_stars?: number;
     message_starred?: boolean;
 }
 
-type DebugMessage = any; // 7
+/**
+ * 7
+ * TODO
+ */
+interface DebugMessage extends BaseEvent {
+    [key: string]: any;
+}
 
-interface UserMentioned {
-    event_type: number; // 8
-    time_stamp: number;
+/**
+ * 8
+ */
+interface UserMentioned extends BaseEvent {
     content: string;
-    id: number;
     user_id: number;
     target_user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
     message_id: number;
     parent_id: number;
 }
 
-interface MessageFlagged {
-    event_type: number; // 9
+/**
+ * 9
+ * TODO
+ */
+interface MessageFlagged extends BaseEvent {
+    [key: string]: any;
 }
 
-interface MessageDeleted {
-    event_type: number; // 10
-    time_stamp: number;
-    id: number;
+/**
+ * 10
+ */
+interface MessageDeleted extends BaseEvent {
     user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
     message_id: number;
 }
 
-interface FileAdded {
-    event_type: number; // 11
+/**
+ * 11
+ * TODO
+ */
+interface FileAdded extends BaseEvent {
+    [key: string]: any;
 }
 
-interface ModeratorFlag {
-    event_type: number; // 12
+/**
+ * 12
+ * TODO
+ */
+interface ModeratorFlag extends BaseEvent {
+    [key: string]: any;
 }
 
-interface UserSettingsChanged {
-    event_type: number; // 13
+/**
+ * 13
+ * TOOD
+ */
+interface UserSettingsChanged extends BaseEvent {
+    [key: string]: any;
 }
 
-interface GlobalNotification {
-    event_type: number; // 14
+/**
+ * 14
+ * TODO
+ */
+interface GlobalNotification extends BaseEvent {
+    [key: string]: any;
 }
 
-interface UserKicked {
-    event_type: number; // 15
-    time_stamp: number;
+/**
+ * 15
+ */
+interface UserKicked extends BaseEvent {
     content: string;
-    id: number;
     user_id: number;
     target_user_id: number;
     user_name: string;
-    room_id: number;
-    room_name: string;
 }
 
-interface UserNotification {
-    event_type: number; // 16
+/**
+ * 16
+ * TODO
+ */
+interface UserNotification extends BaseEvent {
+    [key: string]: any;
 }
 
-interface Invitation {
-    event_type: number; // 17
+/**
+ * 17
+ * TODO
+ */
+interface Invitation extends BaseEvent {
+    [key: string]: any;
+}
+
+/**
+ * 18
+ * TODO
+ */
+interface MessageReply extends BaseEvent {
+    [key: string]: any;
+}
+
+/**
+ * 19
+ */
+interface MessageMovedOut extends BaseEvent {
+    content: string;
+    user_id: number;
+    user_name: string;
+    moved: boolean;
+}
+
+/**
+ * 20
+ */
+interface MessageMovedIn extends BaseEvent {
+    content: string;
+    user_id: number;
+    user_name: string;
+    moved: boolean;
 }
 
 type Default = any;
