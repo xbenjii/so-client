@@ -26,7 +26,7 @@ interface BotConfig {
 }
 
 export class Client extends EventEmitter {
-    private logger = logger;
+    public logger = logger;
     private jar = jar();
     private fkey: string;
     private ws: WS;
