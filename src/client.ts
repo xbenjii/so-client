@@ -11,35 +11,6 @@ import { logger } from './logger';
 
 const BASE_URL = 'https://chat.stackoverflow.com';
 
-// Thanks awal, https://github.com/awalgarg/sochatbot/blob/master/sechatapi/eventmaps.json
-const EVENT_MAP = {
-    "1": "MessagePosted",
-    "2": "MessageEdited",
-    "3": "UserEntered",
-    "4": "UserLeft",
-    "5": "RoomNameChanged",
-    "6": "MessageStarred",
-    "7": "DebugMessage",
-    "8": "UserMentioned",
-    "9": "MessageFlagged",
-    "10": "MessageDeleted",
-    "11": "FileAdded",
-    "12": "ModeratorFlag",
-    "13": "UserSettingsChanged",
-    "14": "GlobalNotification",
-    "15": "AccessLevelChanged",
-    "16": "UserNotification",
-    "17": "Invitation",
-    "18": "MessageReply",
-    "19": "MessageMovedOut",
-    "20": "MessageMovedIn",
-    "21": "TimeBreak",
-    "22": "FeedTicker",
-    "29": "UserSuspended",
-    "30": "UserMerged",
-    "34": "UserNameOrAvatarChanged"    
-};
-
 type WSMessage = {
     data: {
         e: any[]; //todo
@@ -173,7 +144,7 @@ export class Client extends EventEmitter {
     async makeRequest(
         path: string,
         options: {
-            form?: { [key: string] : string }
+            form?: { [key: string] : any }
             method?: 'POST'
         }
     ) {
@@ -204,6 +175,16 @@ export class Client extends EventEmitter {
         const path = `messages/${messageId}`;
         return this.makeRequest(path, {
             form: { text }
+        });
+    }
+    kick(userid: number, reason?: string) {
+        const path = `rooms/kickmute/${userid}`;
+        return this.makeRequest(path, {});
+    }
+    timeout(roomid: number, duration: number, reason: string) {
+        const path = `rooms/timeout/${roomid}`;
+        return this.makeRequest(path, {
+            form: { duration, reason }
         });
     }
 }
