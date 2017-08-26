@@ -8,6 +8,7 @@ import * as request from 'request-promise';
 import * as cheerio from 'cheerio';
 
 import { logger } from './logger';
+import { getEvent } from './events';
 
 const BASE_URL = 'https://chat.stackoverflow.com';
 
@@ -112,7 +113,7 @@ export class Client extends EventEmitter {
                 for (let [room, data] of Object.entries(json)) {
                     if (data.e && Array.isArray(data.e) && (data.t != data.d)) {
                         data.e.forEach(event => {
-                            this.emit('event', event)
+                            this.emit('event', getEvent(event));
                         });
                     }
                 }

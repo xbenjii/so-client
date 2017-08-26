@@ -1,3 +1,6 @@
+/**
+ * The base event, all events should contain these properties
+ */
 interface BaseEvent {
     event_type: number;
     time_stamp: number;
@@ -10,6 +13,7 @@ interface BaseEvent {
  * 1
  */
 interface MessagePosted extends BaseEvent {
+    event_type: 1;
     content: string;
     user_id: number;
     user_name: string;
@@ -20,6 +24,7 @@ interface MessagePosted extends BaseEvent {
  * 2
  */
 interface MessageEdited extends BaseEvent {
+    event_type: 2;
     content: string;
     user_id: number;
     user_name: string;
@@ -31,6 +36,7 @@ interface MessageEdited extends BaseEvent {
  * 3
  */
 interface UserEntered extends BaseEvent {
+    event_type: 3;
     user_id: number;
     target_user_id: number;
     user_name: string;
@@ -40,6 +46,7 @@ interface UserEntered extends BaseEvent {
  * 4
  */
 interface UserLeft extends BaseEvent {
+    event_type: 4;
     user_id: number;
     target_user_id: number;
     user_name: string;
@@ -49,6 +56,7 @@ interface UserLeft extends BaseEvent {
  * 5
  */
 interface RoomNameChanged extends BaseEvent {
+    event_type: 5;
     content: string;
     user_id: number;
     user_name: string;
@@ -58,6 +66,7 @@ interface RoomNameChanged extends BaseEvent {
  * 6
  */
 interface MessageStarred extends BaseEvent {
+    event_type: 6;
     content: string;
     user_id: number;
     user_name: string;
@@ -71,6 +80,7 @@ interface MessageStarred extends BaseEvent {
  * TODO
  */
 interface DebugMessage extends BaseEvent {
+    event_type: 7;
     [key: string]: any;
 }
 
@@ -78,6 +88,7 @@ interface DebugMessage extends BaseEvent {
  * 8
  */
 interface UserMentioned extends BaseEvent {
+    event_type: 8;
     content: string;
     user_id: number;
     target_user_id: number;
@@ -90,6 +101,7 @@ interface UserMentioned extends BaseEvent {
  * 9
  */
 interface MessageFlagged extends BaseEvent {
+    event_type: 9;
     content: string;
     message_id: string;
     message_flags: number;
@@ -99,6 +111,7 @@ interface MessageFlagged extends BaseEvent {
  * 10
  */
 interface MessageDeleted extends BaseEvent {
+    event_type: 10;
     user_id: number;
     user_name: string;
     message_id: number;
@@ -109,6 +122,7 @@ interface MessageDeleted extends BaseEvent {
  * TODO
  */
 interface FileAdded extends BaseEvent {
+    event_type: 11;
     [key: string]: any;
 }
 
@@ -117,6 +131,7 @@ interface FileAdded extends BaseEvent {
  * TODO
  */
 interface ModeratorFlag extends BaseEvent {
+    event_type: 12;
     [key: string]: any;
 }
 
@@ -125,6 +140,7 @@ interface ModeratorFlag extends BaseEvent {
  * TOOD
  */
 interface UserSettingsChanged extends BaseEvent {
+    event_type: 13;
     [key: string]: any;
 }
 
@@ -133,6 +149,7 @@ interface UserSettingsChanged extends BaseEvent {
  * TODO
  */
 interface GlobalNotification extends BaseEvent {
+    event_type: 14;
     [key: string]: any;
 }
 
@@ -140,6 +157,7 @@ interface GlobalNotification extends BaseEvent {
  * 15
  */
 interface UserKicked extends BaseEvent {
+    event_type: 15;
     content: string;
     user_id: number;
     target_user_id: number;
@@ -151,6 +169,7 @@ interface UserKicked extends BaseEvent {
  * TODO
  */
 interface UserNotification extends BaseEvent {
+    event_type: 16;
     [key: string]: any;
 }
 
@@ -159,6 +178,7 @@ interface UserNotification extends BaseEvent {
  * TODO
  */
 interface Invitation extends BaseEvent {
+    event_type: 17;
     [key: string]: any;
 }
 
@@ -167,6 +187,7 @@ interface Invitation extends BaseEvent {
  * TODO
  */
 interface MessageReply extends BaseEvent {
+    event_type: 18;
     [key: string]: any;
 }
 
@@ -174,6 +195,7 @@ interface MessageReply extends BaseEvent {
  * 19
  */
 interface MessageMovedOut extends BaseEvent {
+    event_type: 19;
     content: string;
     user_id: number;
     user_name: string;
@@ -184,40 +206,46 @@ interface MessageMovedOut extends BaseEvent {
  * 20
  */
 interface MessageMovedIn extends BaseEvent {
+    event_type: 20;
     content: string;
     user_id: number;
     user_name: string;
     moved: boolean;
 }
 
-type Default = any;
+type Event = 
+    MessagePosted |
+    MessageEdited |
+    UserEntered |
+    UserLeft |
+    RoomNameChanged |
+    MessageStarred |
+    DebugMessage |
+    UserMentioned |
+    MessageFlagged |
+    MessageDeleted |
+    FileAdded |
+    ModeratorFlag |
+    UserSettingsChanged |
+    GlobalNotification |
+    UserKicked |
+    UserNotification |
+    Invitation |
+    MessageReply |
+    MessageMovedOut |
+    MessageMovedIn;
 
+export function getEvent(event: Event): Event {
+    if(!isEvent(event)) {
+        return assertNever(event);
+    }
+    return event;
+}
 
-// Thanks awal, https://github.com/awalgarg/sochatbot/blob/master/sechatapi/eventmaps.json
-const EVENT_MAP = {
-    "1": "MessagePosted",
-    "2": "MessageEdited",
-    "3": "UserEntered",
-    "4": "UserLeft",
-    "5": "RoomNameChanged",
-    "6": "MessageStarred",
-    "7": "DebugMessage",
-    "8": "UserMentioned",
-    "9": "MessageFlagged",
-    "10": "MessageDeleted",
-    "11": "FileAdded",
-    "12": "ModeratorFlag",
-    "13": "UserSettingsChanged",
-    "14": "GlobalNotification",
-    "15": "AccessLevelChanged", // Fired on a kick
-    "16": "UserNotification",
-    "17": "Invitation",
-    "18": "MessageReply",
-    "19": "MessageMovedOut",
-    "20": "MessageMovedIn",
-    "21": "TimeBreak",
-    "22": "FeedTicker",
-    "29": "UserSuspended",
-    "30": "UserMerged",
-    "34": "UserNameOrAvatarChanged"    
-};
+function isEvent(event: Event): event is Event {
+    return event.event_type !== undefined;
+}
+
+function assertNever(x: any): any {
+    throw new Error("Unexpected event: " + x);
+}
