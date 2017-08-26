@@ -1,4 +1,3 @@
-
 import { EventEmitter } from 'events';
 import { stringify } from 'querystring';
 
@@ -9,38 +8,8 @@ import * as request from 'request-promise';
 import * as cheerio from 'cheerio';
 
 import { logger } from './logger';
-import commands from './commands';
 
 const BASE_URL = 'https://chat.stackoverflow.com';
-
-// Thanks awal, https://github.com/awalgarg/sochatbot/blob/master/sechatapi/eventmaps.json
-const EVENT_MAP = {
-    "1": "MessagePosted",
-    "2": "MessageEdited",
-    "3": "UserEntered",
-    "4": "UserLeft",
-    "5": "RoomNameChanged",
-    "6": "MessageStarred",
-    "7": "DebugMessage",
-    "8": "UserMentioned",
-    "9": "MessageFlagged",
-    "10": "MessageDeleted",
-    "11": "FileAdded",
-    "12": "ModeratorFlag",
-    "13": "UserSettingsChanged",
-    "14": "GlobalNotification",
-    "15": "AccessLevelChanged",
-    "16": "UserNotification",
-    "17": "Invitation",
-    "18": "MessageReply",
-    "19": "MessageMovedOut",
-    "20": "MessageMovedIn",
-    "21": "TimeBreak",
-    "22": "FeedTicker",
-    "29": "UserSuspended",
-    "30": "UserMerged",
-    "34": "UserNameOrAvatarChanged"    
-};
 
 type WSMessage = {
     data: {
@@ -54,11 +23,10 @@ interface BotConfig {
     mainRoom: number;
     email: string;
     password: string;
-    trigger: string;
 }
 
-export class Bot extends EventEmitter {
-    private logger = logger;
+export class Client extends EventEmitter {
+    public logger = logger;
     private jar = jar();
     private fkey: string;
     private ws: WS;
@@ -66,14 +34,12 @@ export class Bot extends EventEmitter {
     private mainRoom: number;
     private email: string;
     private password: string;
-    private trigger: string;
 
     constructor(config: BotConfig) {
         super();
         this.mainRoom = config.mainRoom;
         this.email = config.email;
         this.password = config.password;
-        this.trigger = config.trigger;
     }
     async auth() {
         this.logger.debug(`Authenticating with email ${this.email}`);
@@ -140,6 +106,7 @@ export class Bot extends EventEmitter {
             ws.on('message', () => ws.close());
         } else {
             ws.on('error', error => this.emit('error', error));
+            ws.on('close', error => this.emit('close', error));
             ws.on('message', (message) => {
                 const json = JSON.parse(message.toString()) as WSMessage;
                 for (let [room, data] of Object.entries(json)) {
@@ -174,18 +141,24 @@ export class Bot extends EventEmitter {
             }
         });
     }
-    async apiRequest(path: string, form: { [key: string]: string }) {
+    async makeRequest(
+        path: string,
+        options: {
+            form?: { [key: string] : any }
+            method?: 'POST'
+        }
+    ) {
         const uri = `${BASE_URL}/${path}`;
-        this.logger.debug({
-            uri,
-            form,
-            type: 'api_request'
-        });
         const response = await request({
+            ...{
+                ...options,
+                form: {
+                    ...(options.form ? options.form : {}),
+                    fkey: this.fkey
+                }
+            },
             uri,
-            method: 'POST',
             jar: this.jar,
-            form
         });
         return (response && response.length) ? JSON.parse(response) : {};
     }
@@ -193,39 +166,25 @@ export class Bot extends EventEmitter {
         if (!roomid) {
             roomid = this.mainRoom;
         }
-        this.logger.debug(`Sending text message ${text} to room ${roomid}`);
         const path = `chats/${roomid}/messages/new`;
-        return this.apiRequest(path, {
-            text,
-            fkey: this.fkey
+        return this.makeRequest(path, {
+            form: { text }
         }).then(data => data.id);
     }
     edit(text: string, messageId: number) {
         const path = `messages/${messageId}`;
-        return this.apiRequest(path, {
-            text,
-            fkey: this.fkey
+        return this.makeRequest(path, {
+            form: { text }
         });
     }
-    handleEvent(event: any /* todo */) {
-        this.logger.debug(event);
-        if(event.event_type === 1) {
-            // temporary
-            const matched = splitByUnquotedSpaces(event.content.replace('&quot;', '"'));
-            this.logger.debug(matched);
-            if(matched) {
-                const [command, ...args] = matched;
-                if (!command.startsWith(this.trigger)) { return; }
-                const commandWithoutTrigger = command.replace(this.trigger, '');
-                if(typeof commands[commandWithoutTrigger] === 'function') {
-                    this.logger.debug(`Matched command ${command} with args ${args.join(' ')}`);
-                    commands[commandWithoutTrigger].call(this, { args, event }, (text: string, room = event.room_id) => this.send(text, room));
-                }
-            }
-        }
+    kick(userid: number, reason?: string) {
+        const path = `rooms/kickmute/${userid}`;
+        return this.makeRequest(path, {});
     }
-}
-
-function splitByUnquotedSpaces(str: string) {
-    return str.match(/([^\s"]+)|"([^"]*)"/g);
+    timeout(roomid: number, duration: number, reason: string) {
+        const path = `rooms/timeout/${roomid}`;
+        return this.makeRequest(path, {
+            form: { duration, reason }
+        });
+    }
 }
