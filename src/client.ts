@@ -6,8 +6,6 @@ import * as WS from 'ws';
 import { jar } from 'request';
 import * as request from 'request-promise';
 import * as cheerio from 'cheerio';
-
-import { logger } from './logger';
 import { getEvent } from './events';
 
 const BASE_URL = 'https://chat.stackoverflow.com';
@@ -27,7 +25,6 @@ interface BotConfig {
 }
 
 export class Client extends EventEmitter {
-    public logger = logger;
     private jar = jar();
     private fkey: string;
     private ws: WS;
@@ -43,7 +40,8 @@ export class Client extends EventEmitter {
         this.password = config.password;
     }
     async auth() {
-        this.logger.debug(`Authenticating with email ${this.email}`);
+        this.emit('debug', `Authenticating with email ${this.email}`);
+        // Need an initial GET request to get the "fkey"
         const body = await request({
             method: 'GET',
             uri: 'https://stackoverflow.com/users/login',
@@ -51,8 +49,9 @@ export class Client extends EventEmitter {
         });
         const $ = cheerio.load(body);
         const fkey = $('input[name="fkey"]').val();
-        this.logger.debug(`Using fkey ${fkey} to login`);
-        return request({
+        this.emit('debug', `Using fkey ${fkey} to login`);
+        // Time to login
+        await request({
             method: 'POST',
             uri: 'https://stackoverflow.com/users/login',
             jar: this.jar,
@@ -63,8 +62,10 @@ export class Client extends EventEmitter {
                 password: this.password
             }
         });
+        // Get the new fkey and assign it to the client
+        return this.setup();
     }
-    async connect() {
+    async setup() {
         const body = await request({
             method: 'GET',
             uri: BASE_URL,
@@ -72,11 +73,11 @@ export class Client extends EventEmitter {
         });
         const $ = cheerio.load(body);
         this.fkey = $('input[name="fkey"]').val();
-        this.logger.debug(`Setting bot fkey to ${this.fkey}`);
+        this.emit('debug', `Setting bot fkey to ${this.fkey}`);
         return body;
     }
     async createWsConnection(roomid: number, fkey: string) {
-        this.logger.debug(`Getting WS URL for room ${roomid}`);
+        this.emit('debug', `Getting WS URL for room ${roomid}`);
         const form = stringify({ roomid, fkey });
         const body = await request({
             method: 'POST',
@@ -101,7 +102,7 @@ export class Client extends EventEmitter {
         if (!roomid) {
             roomid = this.mainRoom;
         }
-        this.logger.debug(`Joining room ${roomid}`);
+        this.emit('debug', `Joining room ${roomid}`);
         const ws = await this.createWsConnection(roomid, this.fkey);
         if(!originalRoom) {
             ws.on('message', () => ws.close());
@@ -122,7 +123,8 @@ export class Client extends EventEmitter {
         }
         return new Bluebird(resolve => {
             ws.once('open', () => {
-                this.logger.debug(`Connected to room ${roomid}`);
+                this.emit('join', roomid);
+                this.emit('debug', `Connected to room ${roomid}`);
                 resolve();
             });
         });
@@ -131,7 +133,7 @@ export class Client extends EventEmitter {
         if (!this.fkey) {
             throw new Error('Not connected');
         }
-        this.logger.debug(`Leaving room ${roomid}`);
+        this.emit('debug', `Leaving room ${roomid}`);
         return request({
             method: 'POST',
             uri: `${BASE_URL}/chats/leave/${roomid}`,
@@ -163,10 +165,7 @@ export class Client extends EventEmitter {
         });
         return (response && response.length) ? JSON.parse(response) : {};
     }
-    send(text: string, roomid: number) {
-        if (!roomid) {
-            roomid = this.mainRoom;
-        }
+    send(text: string, roomid: number = this.mainRoom) {
         const path = `chats/${roomid}/messages/new`;
         return this.makeRequest(path, {
             form: { text }
@@ -180,7 +179,9 @@ export class Client extends EventEmitter {
     }
     kick(userid: number, reason?: string) {
         const path = `rooms/kickmute/${userid}`;
-        return this.makeRequest(path, {});
+        return this.makeRequest(path, {
+            form: { reason }
+        });
     }
     timeout(roomid: number, duration: number, reason: string) {
         const path = `rooms/timeout/${roomid}`;
