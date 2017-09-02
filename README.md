@@ -2,7 +2,7 @@
 
 ### Instructions
 ```JavaScript
-import { Client } from './client';
+import { Client } from './so-client/src/client';
 
 (async () => {
 	const client = new Client({
