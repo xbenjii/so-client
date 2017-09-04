@@ -18,7 +18,7 @@ type WSMessage = {
     }
 }
 
-interface BotConfig {
+export interface BotConfig {
     mainRoom: number;
     email: string;
     password: string;
