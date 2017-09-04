@@ -1,13 +1,10 @@
 {
-  "name": "sobot",
+  "name": "so-client",
   "version": "0.0.1",
-  "description": "StackOverflow Chat Bot",
+  "description": "StackOverflow chat client",
   "main": "src/client.ts",
   "author": "Ben Fortune",
   "license": "MIT",
-  "scripts": {
-    "start": "ts-node index.ts"
-  },
   "dependencies": {
     "bluebird": "^3.5.0",
     "cheerio": "^0.22.0",
