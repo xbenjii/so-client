@@ -40,7 +40,6 @@ export class Client extends EventEmitter {
     private password: string;
     private wsRetries: number = 0;
     private wsMaxRetries: number = 5;
-    private ajaxFallback: boolean = false;
     private ajaxFallbackInterval: number = 5000;
     private ajaxLastResponseId!: number;
     private connectionType!: ConnectionType;
