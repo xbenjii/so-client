@@ -168,7 +168,8 @@ export class Client extends EventEmitter {
     send(text: string, roomid: number = this.mainRoom) {
         const path = `chats/${roomid}/messages/new`;
         return this.makeRequest(path, {
-            form: { text }
+            form: { text },
+            method: 'POST'
         }).then(data => data.id);
     }
     edit(text: string, messageId: number) {
