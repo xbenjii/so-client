@@ -5,6 +5,10 @@
   "main": "src/client.ts",
   "author": "Ben Fortune",
   "license": "MIT",
+  "scripts": {
+    "build": "rollup --config",
+    "deploy": ""
+  },
   "dependencies": {
     "bluebird": "^3.5.0",
     "cheerio": "^1.0.0-rc.2",
@@ -13,6 +17,7 @@
     "ws": "^5.1.1"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^6.1.0",
     "@types/bluebird": "^3.5.8",
     "@types/bunyan": "^1.8.2",
     "@types/cheerio": "^0.22.2",
@@ -21,7 +26,10 @@
     "@types/request": "^2.0.2",
     "@types/request-promise": "^4.1.37",
     "@types/ws": "^5.1.1",
+    "rollup": "^1.28.0",
+    "rollup-plugin-typescript": "^1.0.1",
     "ts-node": "^6.0.3",
-    "typescript": "^2.5.1"
+    "tslib": "^1.10.0",
+    "typescript": "^2.9.2"
   }
 }
