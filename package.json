@@ -16,7 +16,7 @@
     "@types/bluebird": "^3.5.8",
     "@types/bunyan": "^1.8.2",
     "@types/cheerio": "^0.22.15",
-    "@types/knex": "^0.14.14",
+    "@types/knex": "^0.16.1",
     "@types/node": "^10.0.6",
     "@types/request": "^2.48.4",
     "@types/request-promise": "^4.1.45",
