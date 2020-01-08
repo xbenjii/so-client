@@ -22,6 +22,6 @@
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^6.0.4",
     "ts-node": "^6.0.3",
-    "typescript": "^2.5.1"
+    "typescript": "^3.7.4"
   }
 }
