@@ -13,7 +13,7 @@
     "ws": "^7.2.1"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.8",
+    "@types/bluebird": "^3.5.29",
     "@types/bunyan": "^1.8.6",
     "@types/cheerio": "^0.22.15",
     "@types/knex": "^0.16.1",
