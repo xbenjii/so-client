@@ -1,10 +1,13 @@
 {
-  "name": "so-client",
+  "name": "so-chat-client",
   "version": "0.0.1",
   "description": "StackOverflow chat client",
-  "main": "src/client.ts",
+  "main": "build/client.js",
   "author": "Ben Fortune",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "bluebird": "^3.7.2",
     "cheerio": "^1.0.0-rc.3",
@@ -17,7 +20,7 @@
     "@types/bunyan": "^1.8.6",
     "@types/cheerio": "^0.22.15",
     "@types/knex": "^0.16.1",
-    "@types/node": "^10.0.6",
+    "@types/node": "^10.17.13",
     "@types/request": "^2.48.4",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^6.0.4",
