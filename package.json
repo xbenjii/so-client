@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.8",
-    "@types/bunyan": "^1.8.2",
+    "@types/bunyan": "^1.8.6",
     "@types/cheerio": "^0.22.15",
     "@types/knex": "^0.16.1",
     "@types/node": "^10.0.6",
