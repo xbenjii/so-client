@@ -1,6 +1,10 @@
 # sobot
 
 ### Instructions
+
+## Install
+`npm install so-chat-client`
+## Run
 ```JavaScript
 import { Client } from 'so-chat-client';
 
