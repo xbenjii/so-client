@@ -20,7 +20,7 @@
     "@types/bunyan": "^1.8.6",
     "@types/cheerio": "^0.22.15",
     "@types/knex": "^0.16.1",
-    "@types/node": "^13.1.6",
+    "@types/node": "^15.9.0",
     "@types/request": "^2.48.4",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^7.2.0",
